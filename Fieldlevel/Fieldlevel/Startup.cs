@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using System.Net.Http;
 
 namespace Fieldlevel
 {
@@ -26,7 +27,11 @@ namespace Fieldlevel
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddHttpClient<IPostsService, PostsService>(c => {
+                c.BaseAddress = new Uri(Configuration["PostsBaseUrl"]);
+            });
+            services.AddLazyCache();
+            services.AddScoped<IUserManager, CachedUserManager>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
